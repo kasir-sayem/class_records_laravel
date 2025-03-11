@@ -1,6 +1,9 @@
 #!/bin/bash
 # Make sure this file has executable permissions, run `chmod +x run-app.sh`
 
+# Create PHP config directory first
+mkdir -p /usr/local/etc/php/conf.d/
+
 # Set up PHP configurations
 echo "
 memory_limit = 256M
@@ -22,27 +25,36 @@ chmod -R 775 storage
 chmod -R 775 bootstrap/cache
 chmod -R 775 storage/app/pdf/cache
 
-# Set proper ownership
-# Note: www-data is the typical web server user, adjust if different
-chown -R www-data:www-data storage
-chown -R www-data:www-data bootstrap/cache
-chown -R www-data:www-data storage/app/pdf/cache
+# Skip ownership changes - they're causing errors
+# These lines were causing errors with "illegal group name"
+# chown -R www-data:www-data storage
+# chown -R www-data:www-data bootstrap/cache
+# chown -R www-data:www-data storage/app/pdf/cache
 
 # Ensure Laravel logs are writable
 touch storage/logs/laravel.log
 chmod 664 storage/logs/laravel.log
-chown www-data:www-data storage/logs/laravel.log
+# chown www-data:www-data storage/logs/laravel.log  # Removing this line
 
 # Clear existing caches
 php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
 
-# Your existing commands
+# Run migrations and database seeding
 php artisan migrate:fresh --force && \
-php artisan db:seed --force && \
-node /assets/scripts/prestart.mjs /assets/nginx.template.conf /nginx.conf && \
-(php-fpm -y /assets/php-fpm.conf & nginx -c /nginx.conf)
+php artisan db:seed --force
+
+# Check if we're in Railway environment (look for specific files/directories)
+if [ -f "/assets/scripts/prestart.mjs" ]; then
+    # We're likely in Railway, run the Node.js script and start services
+    node /assets/scripts/prestart.mjs /assets/nginx.template.conf /nginx.conf && \
+    (php-fpm -y /assets/php-fpm.conf & nginx -c /nginx.conf)
+else
+    # We're in local development, just use artisan serve
+    echo "Starting local development server..."
+    php artisan serve
+fi
 
 # Optional: Add error checking
 if [ $? -ne 0 ]; then
