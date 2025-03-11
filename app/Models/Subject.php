@@ -9,7 +9,9 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sname', 'category'];
+    
+    protected $fillable = ['id', 'sname', 'category'];
+    public $incrementing = false; // Since we're providing explicit IDs 
 
     public function marks()
     {

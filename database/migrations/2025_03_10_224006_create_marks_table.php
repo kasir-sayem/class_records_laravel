@@ -13,12 +13,15 @@ return new class extends Migration
 {
     Schema::create('marks', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('studentid')->constrained('students');
+        $table->unsignedBigInteger('studentid');
         $table->date('mdate');
         $table->integer('mark');
         $table->string('type');
-        $table->foreignId('subjectid')->constrained('subjects');
+        $table->unsignedBigInteger('subjectid');
         $table->timestamps();
+        
+        $table->foreign('studentid')->references('id')->on('students');
+        $table->foreign('subjectid')->references('id')->on('subjects');
     });
 }
 

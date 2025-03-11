@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
+    protected $fillable = ['id', 'sname', 'class', 'boy'];
+    public $incrementing = false; // Since we're providing explicit IDs
 
-    protected $fillable = ['sname', 'class', 'boy'];
+    
 
     public function marks()
     {

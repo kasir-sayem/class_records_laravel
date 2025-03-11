@@ -10,6 +10,7 @@ class Mark extends Model
     use HasFactory;
 
     protected $fillable = ['studentid', 'mdate', 'mark', 'type', 'subjectid'];
+    
 
     public function student()
     {
