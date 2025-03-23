@@ -12,7 +12,7 @@ class ChartController extends Controller
 {
     public function index()
     {
-        // Average marks by subject
+        
         $subjectAverages = Mark::select('subjectid', DB::raw('AVG(mark) as average'))
             ->groupBy('subjectid')
             ->with('subject')

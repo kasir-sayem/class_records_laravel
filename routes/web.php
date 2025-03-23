@@ -13,12 +13,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Dashboard routes
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
-// Student routes
+
 Route::resource('students', StudentController::class);
 
 // Subject routes
